@@ -129,18 +129,17 @@ git clone https://github.com/Sunwood-AI-OSS-Hub/picoclaw.git
 cd picoclaw
 
 # 2. Set your API keys
-cp .env.example .env
-vim .env                    # Set DISCORD_BOT_TOKEN, OPENROUTER_API_KEY, etc.
-vim config/config.json      # Set provider API keys
+cp config.example.json config/config.json
+vim config/config.json      # Set DISCORD_BOT_TOKEN, API keys, etc.
 
 # 3. Build & Start
-docker compose -f docker-compose.discord.yml up -d
+docker compose --profile gateway up -d
 
 # 4. Check logs
-docker compose -f docker-compose.discord.yml logs -f picoclaw
+docker compose logs -f picoclaw-gateway
 
 # 5. Stop
-docker compose -f docker-compose.discord.yml down
+docker compose --profile gateway down
 ```
 
 ### Agent Mode (One-shot)
@@ -156,8 +155,8 @@ docker compose run --rm picoclaw-agent
 ### Rebuild
 
 ```bash
-docker compose -f docker-compose.discord.yml build --no-cache
-docker compose -f docker-compose.discord.yml up -d
+docker compose --profile gateway build --no-cache
+docker compose --profile gateway up -d
 ```
 
 ### 🚀 Quick Start
@@ -306,53 +305,37 @@ picoclaw gateway
 
 </details>
 
-## ⚙️ Configuration
+## Configuration
 
-Config file: `~/.picoclaw/config.json`
+PicoClaw uses `config.json` for configuration.
 
-### Providers
+1.  **Create Configuration File:**
 
-> [!NOTE]
-> Groq provides free voice transcription via Whisper. If configured, Telegram voice messages will be automatically transcribed.
+    Copy the example configuration file:
 
-| Provider | Purpose | Get API Key |
-|----------|---------|-------------|
-| `gemini` | LLM (Gemini direct) | [aistudio.google.com](https://aistudio.google.com) |
-| `zhipu` | LLM (Zhipu direct) | [bigmodel.cn](bigmodel.cn) |
-| `openrouter(To be tested)` | LLM (recommended, access to all models) | [openrouter.ai](https://openrouter.ai) |
-| `anthropic(To be tested)` | LLM (Claude direct) | [console.anthropic.com](https://console.anthropic.com) |
-| `openai(To be tested)` | LLM (GPT direct) | [platform.openai.com](https://platform.openai.com) |
-| `deepseek(To be tested)` | LLM (DeepSeek direct) | [platform.deepseek.com](https://platform.deepseek.com) |
-| `groq` | LLM + **Voice transcription** (Whisper) | [console.groq.com](https://console.groq.com) |
+    ```bash
+    cp config.example.json config/config.json
+    ```
 
+2.  **Edit Configuration:**
 
-<details>
-<summary><b>Zhipu</b></summary>
+    Open `config/config.json` and set your API keys and preferences.
 
-**1. Get API key and base URL**
-- Get [API key](https://bigmodel.cn/usercenter/proj-mgmt/apikeys)
-
-**2. Configure**
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "workspace": "~/.picoclaw/workspace",
-      "model": "glm-4.7",
-      "max_tokens": 8192,
-      "temperature": 0.7,
-      "max_tool_iterations": 20
+    ```json
+    {
+      "providers": {
+        "openrouter": {
+          "api_key": "sk-or-v1-..."
+        }
+      },
+      "channels": {
+        "discord": {
+          "enabled": true,
+          "token": "YOUR_DISCORD_BOT_TOKEN"
+        }
+      }
     }
-  },
-  "providers": {
-    "zhipu": {
-      "api_key": "Your API Key",
-      "api_base": "https://open.bigmodel.cn/api/paas/v4"
-    },
-  },
-}
-```
+    ```
 
 **3. Run**
 
